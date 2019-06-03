@@ -13,14 +13,14 @@ resource "google_dns_record_set" "set-record" {
 
   dynamic "record" {
     for_each = [for s in record: {
-      name   = s.name
-      type   = s.type
-      rrdatas = s.rrdatas
+      record_name   = s.name
+      record_type   = s.type
+      record_rrdatas = s.rrdatas
     }]
     content {
-      name     = record.value.name
-      type     = record.value.type
-      rrdatas  = record.value.rrdatas
+      name     = record.value.record_name
+      type     = record.value.record_type
+      rrdatas  = record.value.record_rrdatas
     }
   }
 }
