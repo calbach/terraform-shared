@@ -5,12 +5,11 @@ data "google_dns_managed_zone" "dns_zone" {
 }
 resource "google_dns_record_set" "set-record" {
   provider     = "google.targetdns"
-  name         = "test_name"
+  name         = "${var.name}"
+  type         = "${var.type}"
   managed_zone = "${data.google_dns_managed_zone.dns_zone.name}"
-#  name         = "${var.a_record_name}.${data.google_dns_managed_zone.${var.target_dns_resource_name}.dns_name}"
-#  type         = "A"
   ttl          = "300"
-#  rrdatas      = "${var.rrdatas_list_a_record}"
+  rrdatas      = "${var.rrdatas_list_a_record}"
 
   dynamic "record" {
     for_each = [for s in record: {
