@@ -4,33 +4,21 @@ data "google_dns_managed_zone" "dns_zone" {
     name         = "${var.target_dns_zone_name}"
 }
 
-resource "google_dns_record_set" "set-record" {
-  for_each = var.record
-  dynamic "record" {
-    for_each = [for s in record: {
-      record_name   = s.name
-      record_type   = s.type
-      record_rrdatas = s.rrdatas
+resource "google_dns_record_set" "set_dns_record" {
+  provider     = "google.broad-jade"
+  ttl          = "300"
+  managed_zone = "${data.google_dns_managed_zone.dns_zone.name}"
+  dynamic "set_record" {
+    for_each = [for record in var.records : {
+      name = record.name
+      type = record.type
+      rrdata = record.rrdata
     }]
+
     content {
-      name     = record.value.record_name
-      type     = record.value.record_type
-      rrdatas  = record.value.record_rrdatas
-
-
+      name = set_record.value.name
+      type = set_record.value.type
+      rrdatas = set_record.value.rrdatas
     }
   }
-      provider     = "google.targetdns"
-      managed_zone = "${data.google_dns_managed_zone.dns_zone.name}"
-      ttl          = "300"
 }
-
-
-#resource "google_dns_record_set" "set-cname-record" {
-#    provider = "google.targetdns"
-#    managed_zone = "${data.google_dns_managed_zone.${var.target_dns_resource_name}.name}"
-#    name = "${var.cname_record_name}.${data.google_dns_managed_zone.${var.target_dns_resource_name}.dns_name}"
-#    type = "CNAME"
-#    ttl = "300"
-#    rrdatas = "${var.rrdatas_list_cname_record}"
-#}
