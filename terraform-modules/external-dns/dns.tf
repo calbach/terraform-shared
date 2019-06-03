@@ -5,6 +5,7 @@ data "google_dns_managed_zone" "dns_zone" {
 }
 
 resource "google_dns_record_set" "set-record" {
+  for_each = var.record
   dynamic "record" {
     for_each = [for s in record: {
       record_name   = s.name
@@ -12,16 +13,16 @@ resource "google_dns_record_set" "set-record" {
       record_rrdatas = s.rrdatas
     }]
     content {
-      provider     = "google.targetdns"
       name     = record.value.record_name
       type     = record.value.record_type
-      managed_zone = "${data.google_dns_managed_zone.dns_zone.name}"
-      ttl          = "300"
       rrdatas  = record.value.record_rrdatas
 
 
     }
   }
+      provider     = "google.targetdns"
+      managed_zone = "${data.google_dns_managed_zone.dns_zone.name}"
+      ttl          = "300"
 }
 
 
