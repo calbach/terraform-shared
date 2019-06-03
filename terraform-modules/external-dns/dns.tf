@@ -5,7 +5,7 @@ data "google_dns_managed_zone" "${var.target_dns_resource_name}" {
 }
 resource "google_dns_record_set" "set-record" {
   provider     = "google.targetdns"
-  managed_zone = "${data.google_dns_managed_zone.${var.target_dns_resource_name}.name}"
+  managed_zone = formatlist("${data.google_dns_managed_zone.%s.name}", var.target_dns_resource_name)
 #  name         = "${var.a_record_name}.${data.google_dns_managed_zone.${var.target_dns_resource_name}.dns_name}"
 #  type         = "A"
   ttl          = "300"
