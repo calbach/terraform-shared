@@ -3,14 +3,8 @@ data "google_dns_managed_zone" "dns_zone" {
     project      = "${var.target_project}"
     name         = "${var.target_dns_zone_name}"
 }
-resource "google_dns_record_set" "set-record" {
-  provider     = "google.targetdns"
-  name         = "${var.name}"
-  type         = "${var.type}"
-  managed_zone = "${data.google_dns_managed_zone.dns_zone.name}"
-  ttl          = "300"
-  rrdatas      = "${var.rrdatas_list_a_record}"
 
+resource "google_dns_record_set" "set-record" {
   dynamic "record" {
     for_each = [for s in record: {
       record_name   = s.name
@@ -18,9 +12,14 @@ resource "google_dns_record_set" "set-record" {
       record_rrdatas = s.rrdatas
     }]
     content {
+      provider     = "google.targetdns"
       name     = record.value.record_name
       type     = record.value.record_type
+      managed_zone = "${data.google_dns_managed_zone.dns_zone.name}"
+      ttl          = "300"
       rrdatas  = record.value.record_rrdatas
+
+
     }
   }
 }
