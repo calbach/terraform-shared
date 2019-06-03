@@ -3,7 +3,7 @@ data "google_dns_managed_zone" "${var.target_dns_resource_name}" {
     project      = "${var.target_project}"
     name         = "${var.target_dns_zone_name}"
 }
-resource "google_dns_record_set" "set-a-record" {
+resource "google_dns_record_set" "set-record" {
   provider     = "google.targetdns"
   managed_zone = "${data.google_dns_managed_zone.${var.target_dns_resource_name}.name}"
 #  name         = "${var.a_record_name}.${data.google_dns_managed_zone.${var.target_dns_resource_name}.dns_name}"
