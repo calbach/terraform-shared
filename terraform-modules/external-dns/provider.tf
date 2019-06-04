@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 0.12.0"
+}
+
 provider "google" {
     alias = "targetdns"
     credentials = "${var.target_credentials}"

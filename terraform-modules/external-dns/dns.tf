@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 0.12.0"
+}
+
 data "google_dns_managed_zone" "dns_zone" {
     provider     = "google.targetdns"
     project      = "${var.target_project}"
@@ -5,14 +9,11 @@ data "google_dns_managed_zone" "dns_zone" {
 }
 
 resource "google_dns_record_set" "set_dns_record" {
-  provider     = "google.broad-jade"
-  ttl          = "300"
-  managed_zone = "${data.google_dns_managed_zone.dns_zone.name}"
   dynamic "set_record" {
     for_each = [for record in var.records : {
       name = record.name
       type = record.type
-      rrdata = record.rrdata
+      rrdatas = record.rrdatas
     }]
 
     content {
@@ -21,4 +22,7 @@ resource "google_dns_record_set" "set_dns_record" {
       rrdatas = set_record.value.rrdatas
     }
   }
+  provider     = "google.broad-jade"
+  ttl          = "300"
+  managed_zone = "${data.google_dns_managed_zone.dns_zone.name}"
 }
